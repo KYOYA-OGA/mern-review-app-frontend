@@ -4,15 +4,34 @@ import Container from '../Container';
 import FormContainer from '../form/FormContainer';
 import Submit from '../form/Submit';
 import Title from '../form/Title';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { verifyUserEmail } from '../../api/auth';
+import { useNotification } from '../../hooks';
 
 const OTP_LENGTH = 6;
 let currentOTPIndex;
+
+const isValidOTP = (otp) => {
+  let valid = false;
+
+  for (let val of otp) {
+    valid = !isNaN(parseInt(val));
+    if (!valid) break;
+  }
+  return valid;
+};
 
 export default function EmailVerification() {
   const [otp, setOtp] = useState(new Array(OTP_LENGTH).fill(''));
   const [activeOtpIndex, setActiveOtpIndex] = useState(0);
 
+  const navigate = useNavigate();
+  const { state } = useLocation();
+  const user = state && state.user;
+
   const inputRef = useRef(null);
+
+  const { updateNotification } = useNotification();
 
   const focusPreviousInputField = (index) => {
     let nextIndex;
@@ -43,14 +62,35 @@ export default function EmailVerification() {
     }
   };
 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!isValidOTP(otp)) {
+      return updateNotification('error', 'Invalid OTP');
+    }
+
+    const { error, message } = await verifyUserEmail({
+      OTP: otp.join(''),
+      userId: user?.id,
+    });
+    if (error) return updateNotification('error', error);
+
+    updateNotification('success', message);
+  };
+
   useEffect(() => {
     inputRef.current?.focus();
   }, [activeOtpIndex]);
 
+  useEffect(() => {
+    if (!user) navigate('/not-found');
+    // eslint-disable-next-line
+  }, [user]);
+
   return (
     <FormContainer>
       <Container>
-        <form className={commonModalClasses}>
+        <form onSubmit={handleSubmit} className={commonModalClasses}>
           <div>
             <Title>Please Enter the OTP to verify your account</Title>
             <p className="text-center dark:text-dark-subtle text-light-subtle">
@@ -73,7 +113,7 @@ export default function EmailVerification() {
               );
             })}
           </div>
-          <Submit value="Submit" />
+          <Submit value="Verify Account" />
         </form>
       </Container>
     </FormContainer>
