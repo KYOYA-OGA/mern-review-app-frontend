@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 export default function CustomLink({ to, children }) {
   return (
     <Link
-      className="text-dark-subtle hover:text-white transition-colors"
+      className="dark:text-dark-subtle dark:hover:text-white text-light-subtle hover:text-primary transition-colors"
       to={to}
     >
       {children}
