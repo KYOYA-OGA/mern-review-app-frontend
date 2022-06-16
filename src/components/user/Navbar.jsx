@@ -7,7 +7,7 @@ export default function Navbar() {
     <header className="bg-secondary shadow-sm shadow-gray-500">
       <Container className="p-2">
         <div className="flex items-center justify-between">
-          <img src="./logo.png" alt="5star MRP" className="h-10" />
+          <img src="/logo.png" alt="5star MRP" className="h-10" />
           <ul className="flex items-center space-x-4">
             <li>
               <button className="bg-dark-subtle p-1 rounded">
