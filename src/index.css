@@ -9,7 +9,7 @@
   }
 
   .animate-gelatine {
-    animation: gelatine 0.5s 2;
+    animation: gelatine 0.5s;
   }
   @keyframes gelatine {
     from,
