@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth, useNotification } from '../../hooks';
 import { commonModalClasses } from '../../utils/theme';
 import Container from '../Container';
@@ -31,7 +32,8 @@ export default function Signin() {
 
   const { updateNotification } = useNotification();
   const { handleLogin, authInfo } = useAuth();
-  console.log(authInfo);
+  const { isPending, isLoggedIn } = authInfo;
+  const navigate = useNavigate();
 
   const handleChange = ({ target }) => {
     const { value, name } = target;
@@ -46,6 +48,12 @@ export default function Signin() {
 
     handleLogin(userInfo.email, userInfo.password);
   };
+
+  useEffect(() => {
+    if (isLoggedIn) {
+      navigate('/');
+    }
+  }, [isLoggedIn]);
 
   return (
     <FormContainer>
@@ -67,7 +75,7 @@ export default function Signin() {
             placeholder="********"
             type="password"
           />
-          <Submit value="Sign in" />
+          <Submit value="Sign in" busy={isPending} />
 
           <div className="flex justify-between">
             <CustomLink to="/auth/forget-password">Forgot Password?</CustomLink>

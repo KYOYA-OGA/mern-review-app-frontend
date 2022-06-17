@@ -6,7 +6,7 @@ import Submit from '../form/Submit';
 import Title from '../form/Title';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { verifyUserEmail } from '../../api/auth';
-import { useNotification } from '../../hooks';
+import { useAuth, useNotification } from '../../hooks';
 
 const OTP_LENGTH = 6;
 let currentOTPIndex;
@@ -29,6 +29,8 @@ export default function EmailVerification() {
   const { state } = useLocation();
   const user = state && state.user;
 
+  const { isAuth, authInfo } = useAuth();
+  const { isLoggedIn } = authInfo;
   const inputRef = useRef(null);
 
   const { updateNotification } = useNotification();
@@ -69,13 +71,19 @@ export default function EmailVerification() {
       return updateNotification('error', 'Invalid OTP');
     }
 
-    const { error, message } = await verifyUserEmail({
+    const {
+      error,
+      message,
+      user: userResponse,
+    } = await verifyUserEmail({
       OTP: otp.join(''),
       userId: user?.id,
     });
     if (error) return updateNotification('error', error);
 
     updateNotification('success', message);
+    localStorage.setItem('auth-token', userResponse.token);
+    isAuth();
   };
 
   useEffect(() => {
@@ -84,8 +92,9 @@ export default function EmailVerification() {
 
   useEffect(() => {
     if (!user) navigate('/not-found');
+    if (isLoggedIn) navigate('/');
     // eslint-disable-next-line
-  }, [user]);
+  }, [user, isLoggedIn]);
 
   return (
     <FormContainer>
