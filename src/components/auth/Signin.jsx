@@ -1,32 +1,32 @@
-import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useAuth, useNotification } from '../../hooks';
-import { isValidEmail } from '../../utils/helper';
-import { commonModalClasses } from '../../utils/theme';
-import Container from '../Container';
-import CustomLink from '../CustomLink';
-import FormContainer from '../form/FormContainer';
-import FormInput from '../form/FormInput';
-import Submit from '../form/Submit';
-import Title from '../form/Title';
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth, useNotification } from "../../hooks";
+import { isValidEmail } from "../../utils/helper";
+import { commonModalClasses } from "../../utils/theme";
+import Container from "../Container";
+import CustomLink from "../CustomLink";
+import FormContainer from "../form/FormContainer";
+import FormInput from "../form/FormInput";
+import Submit from "../form/Submit";
+import Title from "../form/Title";
 
 const validateUserInfo = ({ name, email, password }) => {
   // eslint-disable-next-line
 
-  if (!email.trim()) return { ok: false, error: 'Email is missing' };
-  if (!isValidEmail(email)) return { ok: false, error: 'Email is invalid' };
+  if (!email.trim()) return { ok: false, error: "Email is missing" };
+  if (!isValidEmail(email)) return { ok: false, error: "Email is invalid" };
 
-  if (!password.trim()) return { ok: false, error: 'Password is missing' };
+  if (!password.trim()) return { ok: false, error: "Password is missing" };
   if (password.length < 8)
-    return { ok: false, error: 'Password must be at least 8 characters' };
+    return { ok: false, error: "Password must be at least 8 characters" };
 
   return { ok: true };
 };
 
 export default function Signin() {
   const [userInfo, setUserInfo] = useState({
-    email: '',
-    password: '',
+    email: "",
+    password: "",
   });
 
   const { updateNotification } = useNotification();
@@ -43,16 +43,10 @@ export default function Signin() {
     e.preventDefault();
     const { ok, error } = validateUserInfo(userInfo);
 
-    if (!ok) return updateNotification('error', error);
+    if (!ok) return updateNotification("error", error);
 
     handleLogin(userInfo.email, userInfo.password);
   };
-
-  useEffect(() => {
-    if (isLoggedIn) {
-      navigate('/');
-    }
-  }, [isLoggedIn]);
 
   return (
     <FormContainer>

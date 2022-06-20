@@ -1,14 +1,21 @@
-import Navbar from './components/user/Navbar';
-import Signin from './components/auth/Signin';
-import Signup from './components/auth/Signup';
-import { Route, Routes } from 'react-router-dom';
-import Home from './components/Home';
-import EmailVerification from './components/auth/EmailVerification';
-import ForgetPassword from './components/auth/ForgetPassword';
-import ConfirmPassword from './components/auth/ConfirmPassword';
-import NotFound from './components/NotFound';
+import Navbar from "./components/user/Navbar";
+import Signin from "./components/auth/Signin";
+import Signup from "./components/auth/Signup";
+import { Route, Routes } from "react-router-dom";
+import Home from "./components/Home";
+import EmailVerification from "./components/auth/EmailVerification";
+import ForgetPassword from "./components/auth/ForgetPassword";
+import ConfirmPassword from "./components/auth/ConfirmPassword";
+import NotFound from "./components/NotFound";
+import { useAuth } from "./hooks";
+import AdminNavigator from "./navigator/AdminNavigator";
 
 function App() {
+  const { authInfo } = useAuth();
+  const isAdmin = authInfo.profile?.role === "admin";
+
+  if (isAdmin) return <AdminNavigator />;
+
   return (
     <>
       <Navbar />
