@@ -26,4 +26,30 @@
       transform: scale(0.95, 1.05);
     }
   }
+
+  .animate-scale {
+    animation: scale 0.2s;
+    transform-origin: 0% 0%;
+  }
+  .animate-scale-reverse {
+    animation: scale-reverse 0.2s;
+    transform-origin: 0% 0%;
+  }
+  @keyframes scale {
+    0% {
+      transform: scaleY(0);
+    }
+    100% {
+      transform: scaleY(1);
+    }
+  }
+
+  @keyframes scale-reverse {
+    0% {
+      transform: scaleY(1);
+    }
+    100% {
+      transform: scaleY(0);
+    }
+  }
 }
