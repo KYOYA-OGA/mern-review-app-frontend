@@ -1,12 +1,27 @@
 import React from 'react';
+import { commonInputClasses } from '../../utils/theme';
+import LiveSearch from '../LiveSearch';
 import TagsInput from './TagsInput';
-
-const commonInputClasses = `w-full bg-transparent outline-none dark:border-dark-subtle border-light-subtle dark:focus:border-white focus:border-primary transition dark:text-white text-primary`;
+import { results } from '../../fakeData';
 
 export default function MovieForm() {
   const handleSubmit = (e) => {
     e.preventDefault();
   };
+
+  const renderItem = (result) => {
+    return (
+      <div key={result.id} className="flex space-x-2 rounded overflow-hidden">
+        <img
+          src={result.avatar}
+          alt={result.name}
+          className="w-16 h-16 object-cover"
+        />
+        <p className="dark:text-white font-semibold">{result.name}</p>
+      </div>
+    );
+  };
+
   return (
     <form onSubmit={handleSubmit} className="flex space-x-3">
       <div className="w-[70%] space-y-5">
@@ -29,7 +44,20 @@ export default function MovieForm() {
           ></textarea>
         </div>
 
-        <TagsInput />
+        <div>
+          <Label htmlFor="tags">Tags</Label>
+          <TagsInput name="tags" />
+        </div>
+
+        <div>
+          <LiveSearch
+            placeholder="Search profile..."
+            results={results}
+            renderItem={renderItem}
+            onSelect={(result) => console.log(result)}
+            onChange={(e) => console.log(e.target.value)}
+          />
+        </div>
       </div>
       <div className="w-[30%] h-5 bg-blue-400"></div>
     </form>
