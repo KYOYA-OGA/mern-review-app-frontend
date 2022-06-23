@@ -1,9 +1,9 @@
 import React from 'react';
-import { AiOutlineClose } from 'react-icons/ai';
+import { AiOutlineCheck, AiOutlineClose } from 'react-icons/ai';
 import ModalContainer from './ModalContainer';
 
-export default function WritersModal({
-  profiles = [],
+export default function CastModal({
+  casts = [],
   visible,
   onClose,
   onRemoveClick,
@@ -11,7 +11,8 @@ export default function WritersModal({
   return (
     <ModalContainer ignoreContainer onClose={onClose} visible={visible}>
       <div className="space-y-2 dark:bg-primary bg-white rounded max-w-[95%] max-h-[40rem] lg:max-w-[45rem] overflow-auto p-2 custom-scroll-bar">
-        {profiles.map(({ id, name, avatar }) => {
+        {casts.map(({ profile, roleAs, leadActor }) => {
+          const { name, avatar, id } = profile;
           return (
             <div
               className="flex space-x-3 dark:bg-secondary bg-white drop-shadow-md rounded"
@@ -22,9 +23,19 @@ export default function WritersModal({
                 src={avatar}
                 alt={name}
               />
-              <p className="w-full font-semibold dark:text-white text-primary">
-                {name}
-              </p>
+              <div className="w-full flex flex-col justify-between">
+                <div className="">
+                  <p className="font-semibold dark:text-white text-primary">
+                    {name}
+                  </p>
+                  <p className="text-sm dark:text-dark-subtle text-light-subtle">
+                    {roleAs}
+                  </p>
+                </div>
+                {leadActor && (
+                  <AiOutlineCheck className="text-light-subtle dark:text-dark-subtle" />
+                )}
+              </div>
               <button
                 onClick={() => onRemoveClick(id)}
                 className="dark:text-white text-primary hover:opacity-80 transition-opacity p-2"
