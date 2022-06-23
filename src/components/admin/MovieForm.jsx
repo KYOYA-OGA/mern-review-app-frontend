@@ -5,6 +5,7 @@ import TagsInput from './TagsInput';
 import { results } from '../../fakeData';
 import Submit from '../form/Submit';
 import { useNotification } from '../../hooks';
+import WritersModal from '../Modal/WritersModal';
 
 const defaultMovieInfo = {
   title: '',
@@ -23,6 +24,8 @@ const defaultMovieInfo = {
 
 export default function MovieForm() {
   const [movieInfo, setMovieInfo] = useState({ ...defaultMovieInfo });
+  const [showWritersModal, setShowWritersModal] = useState(false);
+
   const { updateNotification } = useNotification();
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -72,75 +75,104 @@ export default function MovieForm() {
     setMovieInfo({ ...movieInfo, writers: [...writers, profile] });
   };
 
+  const displayWritersModal = () => {
+    setShowWritersModal(true);
+  };
+
+  const hideWritersModal = () => {
+    setShowWritersModal(false);
+  };
+
+  const handleWriterRemove = (profileId) => {
+    const { writers } = movieInfo;
+    const newWriters = writers.filter((writer) => writer.id !== profileId);
+
+    if (!newWriters.length) hideWritersModal();
+    setMovieInfo({ ...movieInfo, writers: newWriters });
+  };
+
   return (
-    <form onSubmit={handleSubmit} className="flex space-x-3">
-      <div className="w-[70%] space-y-5">
-        <div>
-          <Label htmlFor="title">Title</Label>
-          <input
-            id="title"
-            type="text"
-            className={`${commonInputClasses} border-b-2 font-semibold text-xl`}
-            placeholder="Titanic"
-            value={title}
-            onChange={handleChange}
-            name="title"
-          />
-        </div>
-
-        <div>
-          <Label htmlFor="storyLine">Story Line</Label>
-          <textarea
-            value={storyLine}
-            onChange={handleChange}
-            name="storyLine"
-            id="storyLine"
-            className={`${commonInputClasses} border-b-2 resize-none h-24`}
-            placeholder="Movie story line..."
-          ></textarea>
-        </div>
-
-        <div>
-          <Label htmlFor="tags">Tags</Label>
-          <TagsInput onChange={updateTags} name="tags" />
-        </div>
-
-        <div>
-          <Label htmlFor="director">Director</Label>
-          <LiveSearch
-            name="director"
-            placeholder="Search profile..."
-            results={results}
-            renderItem={renderItem}
-            onSelect={updateDirector}
-            onChange={(e) => console.log(e.target.value)}
-            value={director.name}
-          />
-        </div>
-
-        <div>
-          <div className="flex justify-between">
-            <LabelWithBadge badge={writers.length} htmlFor={writers}>
-              Writers
-            </LabelWithBadge>
-            <button className="dark:text-white text-primary hover:underline transition">
-              View All
-            </button>
+    <>
+      <form onSubmit={handleSubmit} className="flex space-x-3">
+        <div className="w-[70%] space-y-5">
+          <div>
+            <Label htmlFor="title">Title</Label>
+            <input
+              id="title"
+              type="text"
+              className={`${commonInputClasses} border-b-2 font-semibold text-xl`}
+              placeholder="Titanic"
+              value={title}
+              onChange={handleChange}
+              name="title"
+            />
           </div>
-          <LiveSearch
-            name="writers"
-            placeholder="Search Writers..."
-            results={results}
-            renderItem={renderItem}
-            onSelect={updateWriters}
-            onChange={(e) => console.log(e.target.value)}
-          />
-        </div>
 
-        <Submit value="Upload" />
-      </div>
-      <div className="w-[30%] h-5 bg-blue-400"></div>
-    </form>
+          <div>
+            <Label htmlFor="storyLine">Story Line</Label>
+            <textarea
+              value={storyLine}
+              onChange={handleChange}
+              name="storyLine"
+              id="storyLine"
+              className={`${commonInputClasses} border-b-2 resize-none h-24`}
+              placeholder="Movie story line..."
+            ></textarea>
+          </div>
+
+          <div>
+            <Label htmlFor="tags">Tags</Label>
+            <TagsInput onChange={updateTags} name="tags" />
+          </div>
+
+          <div>
+            <Label htmlFor="director">Director</Label>
+            <LiveSearch
+              name="director"
+              placeholder="Search profile..."
+              results={results}
+              renderItem={renderItem}
+              onSelect={updateDirector}
+              onChange={(e) => console.log(e.target.value)}
+              value={director.name}
+            />
+          </div>
+
+          <div>
+            <div className="flex justify-between">
+              <LabelWithBadge badge={writers.length} htmlFor={writers}>
+                Writers
+              </LabelWithBadge>
+              <button
+                type="button"
+                className="dark:text-white text-primary hover:underline transition"
+                onClick={displayWritersModal}
+              >
+                View All
+              </button>
+            </div>
+            <LiveSearch
+              name="writers"
+              placeholder="Search Writers..."
+              results={results}
+              renderItem={renderItem}
+              onSelect={updateWriters}
+              onChange={(e) => console.log(e.target.value)}
+            />
+          </div>
+
+          <Submit value="Upload" />
+        </div>
+        <div className="w-[30%] h-5 bg-blue-400"></div>
+      </form>
+
+      <WritersModal
+        visible={showWritersModal}
+        profiles={writers}
+        onClose={hideWritersModal}
+        onRemoveClick={handleWriterRemove}
+      />
+    </>
   );
 }
 
