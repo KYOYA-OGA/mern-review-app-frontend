@@ -11,6 +11,12 @@ import CastModal from '../modals/CastModal';
 import PosterSelector from '../PosterSelector';
 import GenresSelector from '../GenresSelector';
 import GenresModal from '../modals/GenresModal';
+import Selector from '../Selector';
+import {
+  languageOptions,
+  statusOptions,
+  typeOptions,
+} from '../../utils/options';
 
 export const renderItem = (result) => {
   return (
@@ -55,7 +61,18 @@ export default function MovieForm() {
     console.log(movieInfo);
   };
 
-  const { title, storyLine, director, writers, cast, tags, genres } = movieInfo;
+  const {
+    title,
+    storyLine,
+    director,
+    writers,
+    cast,
+    tags,
+    genres,
+    type,
+    language,
+    status,
+  } = movieInfo;
 
   const updatePosterForUI = (file) => {
     const url = URL.createObjectURL(file);
@@ -246,6 +263,28 @@ export default function MovieForm() {
             accept="image/*"
           />
           <GenresSelector badge={genres.length} onClick={displayGenresModal} />
+
+          <Selector
+            onChange={handleChange}
+            name="type"
+            options={typeOptions}
+            value={type}
+            label="Type"
+          />
+          <Selector
+            onChange={handleChange}
+            name="language"
+            options={languageOptions}
+            value={language}
+            label="Language"
+          />
+          <Selector
+            onChange={handleChange}
+            name="status"
+            options={statusOptions}
+            value={status}
+            label="Status"
+          />
         </div>
       </div>
 
