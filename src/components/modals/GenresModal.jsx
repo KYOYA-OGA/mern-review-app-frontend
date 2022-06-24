@@ -35,7 +35,7 @@ export default function GenresModal({
 
   useEffect(() => {
     setSelectedGenres(previousSelection);
-  }, []);
+  }, [previousSelection]);
 
   return (
     <ModalContainer visible={visible} onClose={handleClose}>

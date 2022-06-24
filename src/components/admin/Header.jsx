@@ -1,15 +1,15 @@
-import { useState, useRef } from "react";
-import { AiOutlinePlus } from "react-icons/ai";
-import { BsFillSunFill } from "react-icons/bs";
-import { useTheme } from "../../hooks";
+import { useState, useRef } from 'react';
+import { AiOutlinePlus } from 'react-icons/ai';
+import { BsFillSunFill } from 'react-icons/bs';
+import { useTheme } from '../../hooks';
 
 export default function Header({ onAddActorClick, onAddMovieClick }) {
   const [showOptions, setShowOptions] = useState(false);
   const { toggleTheme } = useTheme();
 
   const options = [
-    { title: "Add Movie", onClick: onAddMovieClick },
-    { title: "Add Actor", onClick: onAddActorClick },
+    { title: 'Add Movie', onClick: onAddMovieClick },
+    { title: 'Add Actor', onClick: onAddActorClick },
   ];
 
   return (
@@ -47,7 +47,7 @@ export default function Header({ onAddActorClick, onAddMovieClick }) {
 
 const CreateOptions = ({ options, visible, onClose }) => {
   const container = useRef();
-  const containerID = "option-container";
+  const containerID = 'option-container';
 
   //? Actually I want to add fadeout animation here, but it seems onAnimationEnd doesn't work well at React 18...
 
@@ -77,6 +77,11 @@ const CreateOptions = ({ options, visible, onClose }) => {
   //   e.target.classList.remove("animate-scale");
   // };
 
+  const handleClick = (fn) => {
+    fn();
+    onClose();
+  };
+
   if (!visible) return null;
   return (
     <div
@@ -87,7 +92,7 @@ const CreateOptions = ({ options, visible, onClose }) => {
     >
       {options.map(({ title, onClick }) => {
         return (
-          <Option key={title} onClick={onClick}>
+          <Option key={title} onClick={() => handleClick(onClick)}>
             {title}
           </Option>
         );
