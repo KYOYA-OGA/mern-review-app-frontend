@@ -17,6 +17,8 @@
 - Actor input modal
 - Live search
 - Light & Dark mode
+- Admin dashboard
+- Pagination
 
 Thanks to [Niraj Dhungana](https://www.udemy.com/course/mern-stack-bootcamp-build-a-complete-movie-review-app/) 🙏
 

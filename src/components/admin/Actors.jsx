@@ -1,24 +1,67 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BsPencilSquare, BsTrash } from 'react-icons/bs';
+import { getActors } from '../../api/actor';
+import { useNotification } from '../../hooks';
+import NextPrevButton from '../NextPrevButton';
+
+let currentPageNo = 0;
+const limit = 10;
 
 export default function Actors() {
+  const [actors, setActors] = useState([]);
+  const [reachedToEnd, setReachedToEnd] = useState(false);
+
+  const { updateNotification } = useNotification();
+
+  const fetchActors = async (pageNo) => {
+    const { profiles, error } = await getActors(pageNo, limit);
+    if (error) return updateNotification('error', error);
+
+    if (!profiles.length) {
+      currentPageNo = pageNo - 1;
+      return setReachedToEnd(true);
+    }
+
+    setActors(profiles);
+  };
+
+  const handleOnNextClick = () => {
+    if (reachedToEnd) return;
+    currentPageNo++;
+    fetchActors(currentPageNo);
+  };
+
+  const handleOnPrevClick = () => {
+    if (currentPageNo <= 0) return;
+    currentPageNo--;
+    fetchActors(currentPageNo);
+  };
+
+  useEffect(() => {
+    fetchActors(currentPageNo);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
-    <ul className="grid grid-cols-4 gap-3 my-5">
-      <ActorProfile
-        profile={{
-          name: 'John Doe',
-          about:
-            'Lorem ipsum dolor sit amet consectetur adipisicing elit. Cum, optio?olor sit amet consectetur adipisicing elit. Cum, optio?',
-          avatar:
-            'https://images.unsplash.com/photo-1649859394657-8762d8a4758a?ixlib=rb-1.2.1&ixid=MnwxMjA3fDF8MHxlZGl0b3JpYWwtZmVlZHwxfHx8ZW58MHx8fHw%3D&auto=format&fit=crop&w=400&q=60',
-        }}
+    <div className="p-5">
+      <ul className="grid grid-cols-4 gap-5">
+        {actors.map((actor) => {
+          return <ActorProfile key={actor.id} profile={actor} />;
+        })}
+      </ul>
+
+      <NextPrevButton
+        className="mt-5"
+        onNextClick={handleOnNextClick}
+        onPrevClick={handleOnPrevClick}
       />
-    </ul>
+    </div>
   );
 }
 
 const ActorProfile = ({ profile }) => {
   const [showOptions, setShowOptions] = useState(false);
+  const acceptedNameLength = 15;
 
   const handleOnMouseEnter = () => {
     setShowOptions(true);
@@ -28,15 +71,17 @@ const ActorProfile = ({ profile }) => {
     setShowOptions(false);
   };
 
+  const getName = (name) => {
+    if (name.length <= acceptedNameLength) return name;
+
+    return name.substring(0, acceptedNameLength) + '...';
+  };
+
   if (!profile) return null;
 
-  const {
-    name,
-    about = 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Cum, optio?',
-    avatar,
-  } = profile;
+  const { name, about = '', avatar } = profile;
   return (
-    <li className="bg-white shadow dark:shadow dark:bg-secondary h-20 rounded overflow-hidden">
+    <li className="bg-white shadow dark:shadow dark:bg-secondary h-24 rounded overflow-hidden">
       <div
         onMouseEnter={handleOnMouseEnter}
         onMouseLeave={handleOnMouseLeave}
@@ -45,10 +90,12 @@ const ActorProfile = ({ profile }) => {
         <img
           src={avatar}
           alt={name}
-          className="w-20 aspect-square object-cover"
+          className="w-24 aspect-square object-cover"
         />
         <div className="px-2 text-primary dark:text-white">
-          <h1 className="text-xl font-semibold">{name}</h1>
+          <h1 className="text-xl font-semibold whitespace-nowrap ">
+            {getName(name)}
+          </h1>
           <p className="">{about.substring(0, 50)}</p>
         </div>
 
