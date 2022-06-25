@@ -45,6 +45,10 @@ export default function MovieUpload({ visible }) {
     return `Upload progress ${uploadProgress}%`;
   };
 
+  const handleSubmit = async (movieInfo) => {
+    console.log(movieInfo);
+  };
+
   return (
     <ModalContainer visible={visible}>
       {/* <UploadProgress
@@ -58,7 +62,7 @@ export default function MovieUpload({ visible }) {
           onTypeError={handleTypeError}
         /> */}
 
-      <MovieForm />
+      <MovieForm onSubmit={handleSubmit} />
     </ModalContainer>
   );
 }

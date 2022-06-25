@@ -10,7 +10,9 @@
 ### Functionality
 
 - Styles with tailwindcss
-- Authentication
+- Authentication(Email)
+- OTP verification
+- Forget password
 - Movie input modal
 - Actor input modal
 - Live search

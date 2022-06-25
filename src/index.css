@@ -72,4 +72,9 @@
   .custom-scroll-bar::-webkit-scrollbar-thumb:hover {
     background: rgb(143, 190, 245);
   }
+
+  /* change color for date input */
+  ::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+  }
 }

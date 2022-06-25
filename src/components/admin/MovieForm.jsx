@@ -20,6 +20,7 @@ import DirectorSelector from '../DirectorSelector';
 import WriterSelector from '../WriterSelector';
 import ViewAllButton from '../ViewAllButton';
 import LabelWithBadge from '../LabelWithBadge';
+import { validateMovie } from '../../utils/validator';
 
 const defaultMovieInfo = {
   title: '',
@@ -36,7 +37,7 @@ const defaultMovieInfo = {
   status: '',
 };
 
-export default function MovieForm() {
+export default function MovieForm({ onSubmit }) {
   const [movieInfo, setMovieInfo] = useState({ ...defaultMovieInfo });
   const [showWritersModal, setShowWritersModal] = useState(false);
   const [showCastModal, setShowCastModal] = useState(false);
@@ -44,19 +45,19 @@ export default function MovieForm() {
   const [selectedPosterForUI, setSelectedPosterForUI] = useState(null);
   const [writerName, setWriterName] = useState('');
 
-  // console.log(movieInfo);
-
   const { updateNotification } = useNotification();
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log(movieInfo);
+    const { error } = validateMovie(movieInfo);
+    if (error) return updateNotification('error', error);
+
+    onSubmit(movieInfo);
   };
 
   const {
     title,
     storyLine,
-
     writers,
     cast,
     tags,
