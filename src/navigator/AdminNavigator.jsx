@@ -10,8 +10,8 @@ import ActorUpload from '../components/modals/ActorUpload';
 import NotFound from '../components/NotFound';
 
 export default function AdminNavigator() {
-  const [showMovieUploadModal, setShowMovieUploadModal] = useState(false);
-  const [showActorUploadModal, setShowActorUploadModal] = useState(true);
+  const [showMovieUploadModal, setShowMovieUploadModal] = useState(true);
+  const [showActorUploadModal, setShowActorUploadModal] = useState(false);
 
   const hideMovieUploadModal = () => {
     setShowMovieUploadModal(false);

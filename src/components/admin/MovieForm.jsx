@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
 import { commonInputClasses } from '../../utils/theme';
-import LiveSearch from '../LiveSearch';
 import TagsInput from './TagsInput';
-import { results } from '../../fakeData';
 import Submit from '../form/Submit';
 import { useNotification } from '../../hooks';
 import WritersModal from '../modals/WritersModal';
@@ -17,19 +15,11 @@ import {
   statusOptions,
   typeOptions,
 } from '../../utils/options';
-
-export const renderItem = (result) => {
-  return (
-    <div key={result.id} className="flex space-x-2 rounded overflow-hidden">
-      <img
-        src={result.avatar}
-        alt={result.name}
-        className="w-16 h-16 object-cover"
-      />
-      <p className="dark:text-white font-semibold">{result.name}</p>
-    </div>
-  );
-};
+import Label from '../Label';
+import DirectorSelector from '../DirectorSelector';
+import WriterSelector from '../WriterSelector';
+import ViewAllButton from '../ViewAllButton';
+import LabelWithBadge from '../LabelWithBadge';
 
 const defaultMovieInfo = {
   title: '',
@@ -52,10 +42,12 @@ export default function MovieForm() {
   const [showCastModal, setShowCastModal] = useState(false);
   const [showGenresModal, setShowGenresModal] = useState(false);
   const [selectedPosterForUI, setSelectedPosterForUI] = useState(null);
+  const [writerName, setWriterName] = useState('');
 
-  console.log(movieInfo);
+  // console.log(movieInfo);
 
   const { updateNotification } = useNotification();
+
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log(movieInfo);
@@ -64,7 +56,7 @@ export default function MovieForm() {
   const {
     title,
     storyLine,
-    director,
+
     writers,
     cast,
     tags,
@@ -86,6 +78,8 @@ export default function MovieForm() {
       updatePosterForUI(poster);
       return setMovieInfo({ ...movieInfo, poster });
     }
+
+    if (name === 'writers') return setWriterName(value);
 
     setMovieInfo({ ...movieInfo, [name]: value });
   };
@@ -119,6 +113,7 @@ export default function MovieForm() {
     }
 
     setMovieInfo({ ...movieInfo, writers: [...writers, profile] });
+    setWriterName('');
   };
 
   const displayWritersModal = () => {
@@ -195,18 +190,7 @@ export default function MovieForm() {
             <TagsInput value={tags} onChange={updateTags} name="tags" />
           </div>
 
-          <div>
-            <Label htmlFor="director">Director</Label>
-            <LiveSearch
-              name="director"
-              placeholder="Search profile..."
-              results={results}
-              renderItem={renderItem}
-              onSelect={updateDirector}
-              onChange={(e) => console.log(e.target.value)}
-              value={director.name}
-            />
-          </div>
+          <DirectorSelector onSelect={updateDirector} />
 
           <div>
             <div className="flex justify-between">
@@ -220,14 +204,7 @@ export default function MovieForm() {
                 View All
               </ViewAllButton>
             </div>
-            <LiveSearch
-              name="writers"
-              placeholder="Search Writers..."
-              results={results}
-              renderItem={renderItem}
-              onSelect={updateWriters}
-              onChange={(e) => console.log(e.target.value)}
-            />
+            <WriterSelector onSelect={updateWriters} />
           </div>
 
           <div>
@@ -312,43 +289,3 @@ export default function MovieForm() {
     </>
   );
 }
-
-const Label = ({ children, htmlFor }) => {
-  return (
-    <label
-      htmlFor={htmlFor}
-      className="dark:text-dark-subtle text-light-subtle font-semibold"
-    >
-      {children}
-    </label>
-  );
-};
-const LabelWithBadge = ({ children, htmlFor, badge = 0 }) => {
-  const renderBadge = () => {
-    if (!badge) return null;
-    return (
-      <span className="dark:bg-dark-subtle bg-light-subtle text-white absolute top-0 right-0 translate-x-6 -translate-y-1 text-xs w-5 h-5 rounded-full flex items-center justify-center">
-        {badge <= 9 ? badge : '9+'}
-      </span>
-    );
-  };
-  return (
-    <div className="relative">
-      <Label htmlFor={htmlFor}>{children}</Label>
-      {renderBadge()}
-    </div>
-  );
-};
-
-const ViewAllButton = ({ children, onClick, visible }) => {
-  if (!visible) return null;
-  return (
-    <button
-      type="button"
-      className="dark:text-white text-primary hover:underline transition"
-      onClick={onClick}
-    >
-      {children}
-    </button>
-  );
-};

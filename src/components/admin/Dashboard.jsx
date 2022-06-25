@@ -1,6 +1,5 @@
-import React from "react";
-import MovieUpload from "./MovieUpload";
+import React from 'react';
 
 export default function Dashboard() {
-  return <MovieUpload />;
+  return null;
 }

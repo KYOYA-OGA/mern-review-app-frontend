@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { results } from '../../fakeData';
-import { useNotification } from '../../hooks';
+import { searchActor } from '../../api/actor';
+import { useNotification, useSearch } from '../../hooks';
+import { renderItem } from '../../utils/helper';
 import { commonInputClasses } from '../../utils/theme';
-import { renderItem } from '../admin/MovieForm';
 import LiveSearch from '../LiveSearch';
 
 const defaultCastInfo = {
@@ -13,8 +13,10 @@ const defaultCastInfo = {
 
 export default function CastForm({ onSubmit }) {
   const [castInfo, setCastInfo] = useState({ ...defaultCastInfo });
+  const [profiles, setProfiles] = useState([]);
 
   const { updateNotification } = useNotification();
+  const { handleSearch, resetSearch } = useSearch();
 
   const { leadActor, profile, roleAs } = castInfo;
 
@@ -31,6 +33,15 @@ export default function CastForm({ onSubmit }) {
     setCastInfo({ ...castInfo, profile });
   };
 
+  const handleProfileChange = ({ target }) => {
+    const { value } = target;
+    const { profile } = castInfo;
+    profile.name = value;
+
+    setCastInfo({ ...castInfo, ...profile });
+    handleSearch(searchActor, value, setProfiles);
+  };
+
   const handleSubmit = () => {
     const { profile, roleAs } = castInfo;
     if (!profile.name)
@@ -39,7 +50,9 @@ export default function CastForm({ onSubmit }) {
       return updateNotification('error', 'Cast role is missing');
 
     onSubmit(castInfo);
-    setCastInfo({ ...defaultCastInfo });
+    setCastInfo({ ...defaultCastInfo, profile: { name: '' } });
+    resetSearch();
+    setProfiles([]);
   };
 
   return (
@@ -56,10 +69,10 @@ export default function CastForm({ onSubmit }) {
       <LiveSearch
         placeholder="Search profile"
         value={profile.name}
-        results={results}
+        results={profiles}
         onSelect={handleProfileSelect}
         renderItem={renderItem}
-        onChange={() => {}}
+        onChange={handleProfileChange}
       />
       <span className="dark:text-dark-subtle text-light-subtle font-semibold">
         as

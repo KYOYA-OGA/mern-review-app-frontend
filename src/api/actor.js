@@ -15,3 +15,18 @@ export const createActor = async (formData) => {
     return catchError(error);
   }
 };
+
+export const searchActor = async (query) => {
+  const token = getToken();
+  try {
+    const { data } = await client.get(`/actor/search?name=${query}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'content-type': 'multipart/form-data',
+      },
+    });
+    return data;
+  } catch (error) {
+    return catchError(error);
+  }
+};

@@ -16,7 +16,7 @@ export default function CastModal({
           return (
             <div
               className="flex space-x-3 dark:bg-secondary bg-white drop-shadow-md rounded"
-              id={id}
+              key={id}
             >
               <img
                 className="w-16 h-16 rounded aspect-square object-cover"

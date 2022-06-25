@@ -14,6 +14,7 @@
 - Movie input modal
 - Actor input modal
 - Live search
+- Light & Dark mode
 
 Thanks to [Niraj Dhungana](https://www.udemy.com/course/mern-stack-bootcamp-build-a-complete-movie-review-app/) 🙏
 

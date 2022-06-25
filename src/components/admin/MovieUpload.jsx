@@ -6,7 +6,7 @@ import { useNotification } from '../../hooks';
 import ModalContainer from '../modals/ModalContainer';
 import MovieForm from './MovieForm';
 
-export default function MovieUpload({ visible, onClose }) {
+export default function MovieUpload({ visible }) {
   const [videoSelected, setVideoSelected] = useState(false);
   const [videoUploaded, setVideoUploaded] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
@@ -46,7 +46,7 @@ export default function MovieUpload({ visible, onClose }) {
   };
 
   return (
-    <ModalContainer visible={visible} onClose={onClose}>
+    <ModalContainer visible={visible}>
       {/* <UploadProgress
           visible={!videoUploaded && videoSelected}
           message={getUploadProgressValue()}
