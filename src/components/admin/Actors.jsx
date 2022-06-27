@@ -1,20 +1,26 @@
 import React, { useState, useEffect } from 'react';
 import { BsPencilSquare, BsTrash } from 'react-icons/bs';
-import { getActors } from '../../api/actor';
-import { useNotification } from '../../hooks';
+import { getActors, searchActor } from '../../api/actor';
+import { useNotification, useSearch } from '../../hooks';
+import AppSearchForm from '../form/AppSearchForm';
+import ConfirmModal from '../modals/ConfirmModal';
 import UpdateActor from '../modals/UpdateActor';
 import NextPrevButton from '../NextPrevButton';
+import NotFoundText from '../NotFoundText';
 
 let currentPageNo = 0;
 const limit = 10;
 
 export default function Actors() {
   const [actors, setActors] = useState([]);
+  const [results, setResults] = useState([]);
   const [reachedToEnd, setReachedToEnd] = useState(false);
   const [showUpdateModal, setShowUpdateModal] = useState(false);
   const [selectedProfile, setSelectedProfile] = useState(null);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
 
   const { updateNotification } = useNotification();
+  const { handleSearch, resetSearch, resultNotFound } = useSearch();
 
   const fetchActors = async (pageNo) => {
     const { profiles, error } = await getActors(pageNo, limit);
@@ -63,6 +69,20 @@ export default function Actors() {
     setActors([...updatedActors]);
   };
 
+  const handleOnSearchSubmit = (value) => {
+    handleSearch(searchActor, value, setResults);
+  };
+
+  const handleSearchFromReset = () => {
+    resetSearch();
+    setResults([]);
+  };
+
+  const handleOnDeleteClick = (profile) => {
+    console.log(profile);
+    setShowConfirmModal(true);
+  };
+
   useEffect(() => {
     fetchActors(currentPageNo);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -71,24 +91,47 @@ export default function Actors() {
   return (
     <>
       <div className="p-5">
+        <div className="flex justify-end mb-5">
+          <AppSearchForm
+            onSubmit={handleOnSearchSubmit}
+            placeholder="Search Actor..."
+            showResetButton={results.length || resultNotFound}
+            onReset={handleSearchFromReset}
+          />
+        </div>
+
+        <NotFoundText visible={resultNotFound} text=" Record not found" />
+
         <ul className="grid grid-cols-4 gap-5">
-          {actors.map((actor) => {
-            return (
-              <ActorProfile
-                key={actor.id}
-                profile={actor}
-                onEditClick={() => handleOnEditClick(actor)}
-              />
-            );
-          })}
+          {results.length || resultNotFound
+            ? results.map((actor) => (
+                <ActorProfile
+                  key={actor.id}
+                  profile={actor}
+                  onEditClick={() => handleOnEditClick(actor)}
+                  onDeleteClick={() => handleOnDeleteClick(actor)}
+                />
+              ))
+            : actors.map((actor) => (
+                <ActorProfile
+                  key={actor.id}
+                  profile={actor}
+                  onEditClick={() => handleOnEditClick(actor)}
+                  onDeleteClick={() => handleOnDeleteClick(actor)}
+                />
+              ))}
         </ul>
 
-        <NextPrevButton
-          className="mt-5"
-          onNextClick={handleOnNextClick}
-          onPrevClick={handleOnPrevClick}
-        />
+        {!results.length && !resultNotFound ? (
+          <NextPrevButton
+            className="mt-5"
+            onNextClick={handleOnNextClick}
+            onPrevClick={handleOnPrevClick}
+          />
+        ) : null}
       </div>
+
+      <ConfirmModal visible={showConfirmModal} onClose />
       <UpdateActor
         visible={showUpdateModal}
         onClose={hideUpdateModal}
@@ -99,7 +142,7 @@ export default function Actors() {
   );
 }
 
-const ActorProfile = ({ profile, onEditClick }) => {
+const ActorProfile = ({ profile, onEditClick, onDeleteClick }) => {
   const [showOptions, setShowOptions] = useState(false);
   const acceptedNameLength = 15;
 
@@ -139,7 +182,11 @@ const ActorProfile = ({ profile, onEditClick }) => {
           <p className="mt-2 text-sm opacity-75">{about.substring(0, 45)}</p>
         </div>
 
-        <Options onEditClick={onEditClick} visible={showOptions} />
+        <Options
+          onEditClick={onEditClick}
+          visible={showOptions}
+          onDeleteClick={onDeleteClick}
+        />
       </div>
     </li>
   );
@@ -161,6 +208,7 @@ const Options = ({ visible, onDeleteClick, onEditClick }) => {
         onClick={onDeleteClick}
         className="p-2 rounded-full bg-red-500 text-white hover:opacity-80 transition-opacity"
         type="button"
+        onDeleteClick
       >
         <BsTrash />
       </button>

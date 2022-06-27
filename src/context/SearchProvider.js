@@ -24,8 +24,13 @@ export default function SearchProvider({ children }) {
     const { error, results } = await method(query);
     if (error) return updateNotification('error', error);
 
-    if (!results.length) return setResultNotFound(true);
+    if (!results.length) {
+      setResults([]);
+      updateFunc && updateFunc([]);
+      return setResultNotFound(true);
+    }
 
+    setResultNotFound(false);
     setResults(results);
     updateFunc && updateFunc([...results]);
   };
@@ -36,7 +41,7 @@ export default function SearchProvider({ children }) {
     setSearching(true);
     if (!query.trim()) {
       updateFunc && updateFunc([]);
-      resetSearch();
+      return resetSearch();
     }
 
     debounceFunc(method, query, updateFunc);
