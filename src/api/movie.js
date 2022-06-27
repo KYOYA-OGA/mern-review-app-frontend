@@ -37,3 +37,22 @@ export const uploadMovie = async (formData) => {
     return catchError(error);
   }
 };
+
+export const getMovies = async (pageNo, limit) => {
+  const token = getToken();
+  try {
+    const { data } = await client.get(
+      `/movie/movies?pageNo=${pageNo}&limit=${limit}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'content-type': 'multipart/form-data',
+        },
+      }
+    );
+
+    return data;
+  } catch (error) {
+    return catchError(error);
+  }
+};

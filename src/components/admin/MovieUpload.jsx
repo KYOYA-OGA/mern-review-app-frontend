@@ -54,13 +54,12 @@ export default function MovieUpload({ visible, onClose }) {
     data.append('trailer', JSON.stringify(videoInfo));
     const res = await uploadMovie(data);
     setBusy(false);
-    console.log(res);
-
+    updateNotification('success', 'Movie uploaded successfully');
     onClose();
   };
 
   return (
-    <ModalContainer visible={visible}>
+    <ModalContainer onClose={onClose} visible={visible}>
       <div className="mb-5">
         <UploadProgress
           visible={!videoUploaded && videoSelected}
