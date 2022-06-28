@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useEffect } from 'react';
-import { getMovieForUpdate, getMovies } from '../../api/movie';
+import { deleteMovie, getMovieForUpdate, getMovies } from '../../api/movie';
 import { useNotification } from '../../hooks';
+import ConfirmModal from '../modals/ConfirmModal';
 import UpdateMovie from '../modals/UpdateMovie';
 import MovieListItem from '../MovieListItem';
 import NextPrevButton from '../NextPrevButton';
@@ -14,6 +15,8 @@ export default function Movies() {
   const [reachedToEnd, setReachedToEnd] = useState(false);
   const [showUpdateModal, setShowUpdateModal] = useState(false);
   const [selectedMovie, setSelectedMovie] = useState(null);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [busy, setBusy] = useState(false);
 
   const { updateNotification } = useNotification();
 
@@ -39,8 +42,29 @@ export default function Movies() {
     setShowUpdateModal(true);
   };
 
+  const handleOnDeleteClick = (movie) => {
+    setSelectedMovie(movie);
+    setShowConfirmModal(true);
+  };
+
+  const handleOnDeleteConfirm = async () => {
+    setBusy(true);
+    const { error, message } = await deleteMovie(selectedMovie.id);
+
+    setBusy(false);
+    if (error) return updateNotification('error', error);
+
+    updateNotification('success', message);
+    hideConfirmModal();
+    fetchMovies(currentPageNo);
+  };
+
   const hideUpdateModal = () => {
     setShowUpdateModal(false);
+  };
+
+  const hideConfirmModal = () => {
+    setShowConfirmModal(false);
   };
 
   const handleOnUpdate = (movie) => {
@@ -52,11 +76,6 @@ export default function Movies() {
     setMovies([...updatedMovies]);
   };
 
-  useEffect(() => {
-    fetchMovies();
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
   const fetchMovies = async (pageNo) => {
     const { movies, error } = await getMovies(pageNo, limit);
     if (error) return updateNotification('error', error);
@@ -69,6 +88,12 @@ export default function Movies() {
     setMovies([...movies]);
   };
 
+  useEffect(() => {
+    fetchMovies();
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
     <>
       <div className="space-y-3 p-5">
@@ -78,6 +103,7 @@ export default function Movies() {
               key={movie.id}
               movie={movie}
               onEditClick={() => handleOnEditClick(movie)}
+              onDeleteClick={() => handleOnDeleteClick(movie)}
             />
           );
         })}
@@ -87,6 +113,14 @@ export default function Movies() {
           onPrevClick={handleOnPrevClick}
         />
       </div>
+      <ConfirmModal
+        visible={showConfirmModal}
+        onConfirm={handleOnDeleteConfirm}
+        onCancel={hideConfirmModal}
+        title="Are you sure?"
+        subtitle="This action will remove this movie permanently"
+        busy={busy}
+      />
       <UpdateMovie
         visible={showUpdateModal}
         initialState={selectedMovie}
