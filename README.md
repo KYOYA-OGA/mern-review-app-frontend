@@ -19,6 +19,8 @@
 - Light & Dark mode
 - Admin dashboard
 - Pagination
+- Live Search
+- Traditional Search
 
 Thanks to [Niraj Dhungana](https://www.udemy.com/course/mern-stack-bootcamp-build-a-complete-movie-review-app/) 🙏
 
