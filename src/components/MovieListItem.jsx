@@ -43,14 +43,26 @@ export default function MovieListItem({
 
           <td>
             <div className="flex items-center space-x-3 text-primary dark:text-white text-lg">
-              <button onClick={onDeleteClick} type="button" className="">
-                <BsTrash />
-              </button>
-              <button onClick={onEditClick} type="button" className="">
+              <button
+                onClick={onEditClick}
+                type="button"
+                className="text-blue-500"
+              >
                 <BsPencilSquare />
               </button>
-              <button onClick={onOpenClick} type="button" className="">
+              <button
+                onClick={onOpenClick}
+                type="button"
+                className="text-green-500"
+              >
                 <BsBoxArrowRight />
+              </button>
+              <button
+                onClick={onDeleteClick}
+                type="button"
+                className="text-red-500"
+              >
+                <BsTrash />
               </button>
             </div>
           </td>
