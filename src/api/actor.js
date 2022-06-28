@@ -63,3 +63,17 @@ export const getActors = async (pageNo, limit) => {
     return catchError(error);
   }
 };
+
+export const deleteActor = async (id) => {
+  const token = getToken();
+  try {
+    const { data } = await client.delete(`/actor/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return data;
+  } catch (error) {
+    return catchError(error);
+  }
+};

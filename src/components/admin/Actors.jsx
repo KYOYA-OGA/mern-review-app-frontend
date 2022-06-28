@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { BsPencilSquare, BsTrash } from 'react-icons/bs';
-import { getActors, searchActor } from '../../api/actor';
+import { deleteActor, getActors, searchActor } from '../../api/actor';
 import { useNotification, useSearch } from '../../hooks';
 import AppSearchForm from '../form/AppSearchForm';
 import ConfirmModal from '../modals/ConfirmModal';
@@ -15,9 +15,10 @@ export default function Actors() {
   const [actors, setActors] = useState([]);
   const [results, setResults] = useState([]);
   const [reachedToEnd, setReachedToEnd] = useState(false);
-  const [showUpdateModal, setShowUpdateModal] = useState(false);
   const [selectedProfile, setSelectedProfile] = useState(null);
+  const [showUpdateModal, setShowUpdateModal] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [busy, setBusy] = useState(false);
 
   const { updateNotification } = useNotification();
   const { handleSearch, resetSearch, resultNotFound } = useSearch();
@@ -79,9 +80,25 @@ export default function Actors() {
   };
 
   const handleOnDeleteClick = (profile) => {
-    console.log(profile);
+    setSelectedProfile(profile);
     setShowConfirmModal(true);
   };
+
+  const handleOnDeleteConfirm = async () => {
+    //! You can delete the actor, but this action may break the app... Because actor id is used in movie model too.
+    //todo handle delete specific actor from cast, writer, director in movie model.
+    setBusy(true);
+    const { error, message } = await deleteActor(selectedProfile.id);
+    setBusy(false);
+
+    if (error) return updateNotification('error', error);
+
+    updateNotification('success', message);
+    hideConfirmModal();
+    fetchActors(currentPageNo);
+  };
+
+  const hideConfirmModal = () => setShowConfirmModal(false);
 
   useEffect(() => {
     fetchActors(currentPageNo);
@@ -131,7 +148,15 @@ export default function Actors() {
         ) : null}
       </div>
 
-      <ConfirmModal visible={showConfirmModal} onClose />
+      <ConfirmModal
+        visible={showConfirmModal}
+        onClose
+        onConfirm={handleOnDeleteConfirm}
+        onCancel={hideConfirmModal}
+        busy={busy}
+        title="Are you sure?"
+        subtitle="This action will remove this profile permanently"
+      />
       <UpdateActor
         visible={showUpdateModal}
         onClose={hideUpdateModal}
@@ -208,7 +233,6 @@ const Options = ({ visible, onDeleteClick, onEditClick }) => {
         onClick={onDeleteClick}
         className="p-2 rounded-full bg-red-500 text-white hover:opacity-80 transition-opacity"
         type="button"
-        onDeleteClick
       >
         <BsTrash />
       </button>
