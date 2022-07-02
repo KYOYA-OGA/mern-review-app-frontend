@@ -1,38 +1,54 @@
-import React, { useState } from 'react';
-import { updateMovie } from '../../api/movie';
+import React, { useState, useEffect } from 'react';
+import { getMovieForUpdate, updateMovie } from '../../api/movie';
 import { useNotification } from '../../hooks';
 import MovieForm from '../admin/MovieForm';
 import ModalContainer from './ModalContainer';
 
-export default function UpdateMovie({
-  visible,
-  onClose,
-  initialState,
-  onSuccess,
-}) {
+export default function UpdateMovie({ visible, onSuccess, movieId, onClose }) {
   const [busy, setBusy] = useState(false);
+  const [ready, setReady] = useState(false);
+  const [selectedMovie, setSelectedMovie] = useState(null);
   const { updateNotification } = useNotification();
 
   const handleSubmit = async (data) => {
-    console.log(data);
     setBusy(true);
-    const { error, movie, message } = await updateMovie(initialState.id, data);
+    const { error, movie, message } = await updateMovie(movieId, data);
     setBusy(false);
     if (error) return updateNotification('error', error);
 
     updateNotification('success', message);
     onSuccess(movie);
-    onClose();
   };
 
+  const fetchMovieToUpdate = async () => {
+    const { movie, error } = await getMovieForUpdate(movieId);
+    if (error) return updateNotification('error', error);
+    setSelectedMovie(movie);
+    setReady(true);
+  };
+
+  useEffect(() => {
+    if (movieId) fetchMovieToUpdate();
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [movieId]);
+
   return (
-    <ModalContainer visible={visible}>
-      <MovieForm
-        initialState={initialState}
-        btnTitle="Update"
-        onSubmit={!busy ? handleSubmit : null}
-        busy={busy}
-      />
+    <ModalContainer visible={visible} onClose={onClose}>
+      {ready ? (
+        <MovieForm
+          initialState={selectedMovie}
+          btnTitle="Update"
+          onSubmit={!busy ? handleSubmit : null}
+          busy={busy}
+        />
+      ) : (
+        <div className="w-full h-full flex justify-center items-center">
+          <p className="text-light-subtle dark:text-dark-subtle animate-pulse text-xl">
+            Please wait...
+          </p>
+        </div>
+      )}
     </ModalContainer>
   );
 }

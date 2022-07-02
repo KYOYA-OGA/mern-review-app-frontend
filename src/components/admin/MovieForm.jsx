@@ -207,8 +207,6 @@ export default function MovieForm({ onSubmit, btnTitle, busy, initialState }) {
     }
   }, [initialState]);
 
-  console.log(initialState);
-
   return (
     <>
       <div className="flex space-x-3">

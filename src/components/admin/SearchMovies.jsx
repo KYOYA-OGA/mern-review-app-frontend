@@ -13,6 +13,19 @@ export default function SearchMovies() {
 
   const { updateNotification } = useNotification();
 
+  const handleAfterDelete = (movie) => {
+    const updatedMovies = movies.map((m) => {
+      if (m.id === movie.id) return movie;
+      return m;
+    });
+    setMovies([...updatedMovies]);
+  };
+
+  const handleAfterUpdate = (movie) => {
+    const updatedMovies = movies.filter((m) => m.id !== movie.id);
+    setMovies([...updatedMovies]);
+  };
+
   const searchMovies = async (val) => {
     const { error, results } = await searchMovieForAdmin(val);
     if (error) return updateNotification('error', error);
@@ -37,7 +50,14 @@ export default function SearchMovies() {
       <NotFoundText text="Record not found" visible={resultNotFound} />
       {!resultNotFound
         ? movies.map((movie) => {
-            return <MovieListItem movie={movie} key={movie.id} />;
+            return (
+              <MovieListItem
+                movie={movie}
+                key={movie.id}
+                afterDelete={handleAfterDelete}
+                afterUpdate={handleAfterUpdate}
+              />
+            );
           })
         : null}
     </div>
