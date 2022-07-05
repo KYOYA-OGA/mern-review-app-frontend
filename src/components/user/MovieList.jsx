@@ -1,6 +1,7 @@
 import React from 'react';
 import GridContainer from '../GridContainer';
 import { AiFillStar } from 'react-icons/ai';
+import { Link } from 'react-router-dom';
 
 const trimTitle = (text = '') => {
   if (text.length <= 20) return text;
@@ -25,9 +26,9 @@ export default function MovieList({ title, movies = [] }) {
 }
 
 const ListItem = ({ movie }) => {
-  const { title, poster, reviews } = movie;
+  const { id, title, poster, reviews } = movie;
   return (
-    <article>
+    <Link to={`/movie/${id}`}>
       <img src={poster} alt={title} className="aspect-video object-cover" />
       <h2
         title={title}
@@ -43,6 +44,6 @@ const ListItem = ({ movie }) => {
       ) : (
         <p className="text-highlight dark:text-highlight-dark">No reviews</p>
       )}
-    </article>
+    </Link>
   );
 };
