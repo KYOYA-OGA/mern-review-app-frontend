@@ -6,39 +6,62 @@ import { useNotification } from '../../hooks';
 let count = 0;
 
 export default function HeroSlideShow() {
-  const [slide, setSlide] = useState({});
+  const [currentSlide, setCurrentSlide] = useState({});
   const [cloneSlide, setCloneSlide] = useState({});
   const [slides, setSlides] = useState([]);
-  const [currentIndex, setCurrentIndex] = useState(0);
   const slideRef = useRef();
   const cloneSlideRef = useRef();
 
   const { updateNotification } = useNotification();
 
   const handleAnimationEnd = () => {
-    slideRef.current.classList.remove('slide-in-from-right');
-    cloneSlideRef.current.classList.remove('slide-out-to-left');
+    const classes = [
+      'slide-in-from-right',
+      'slide-out-to-right',
+      'slide-in-from-left',
+      'slide-out-to-left',
+    ];
+    slideRef.current.classList.remove(...classes);
+    cloneSlideRef.current.classList.remove(...classes);
+    // prevent flickering
+    cloneSlideRef.current.classList.add('-z-10');
     setCloneSlide({});
   };
 
   const handleOnNextClick = () => {
+    // prevent flickering
+    if (cloneSlideRef.current?.classList.value.includes('-z-10')) {
+      cloneSlideRef.current.classList.remove('-z-10');
+    }
+
     setCloneSlide(slides[count]);
 
     count = (count + 1) % slides.length;
-    setSlide(slides[count]);
-    setCurrentIndex(count);
+    setCurrentSlide(slides[count]);
 
     cloneSlideRef.current.classList.add('slide-out-to-left');
     slideRef.current.classList.add('slide-in-from-right');
   };
-  const handleOnPrevClick = () => {};
+  const handleOnPrevClick = () => {
+    // prevent flickering
+    if (cloneSlideRef.current?.classList.value.includes('-z-10')) {
+      cloneSlideRef.current.classList.remove('-z-10');
+    }
+    setCloneSlide(slides[count]);
+
+    count = (count + slides.length - 1) % slides.length;
+    setCurrentSlide(slides[count]);
+
+    cloneSlideRef.current.classList.add('slide-out-to-right');
+    slideRef.current.classList.add('slide-in-from-left');
+  };
 
   const fetchLatestUploads = async () => {
     const { error, movies } = await getLatestUploads();
     if (error) return updateNotification('error', error);
 
     setSlides([...movies]);
-    setSlide(movies[0]);
+    setCurrentSlide(movies[0]);
   };
 
   useEffect(() => {
@@ -52,7 +75,7 @@ export default function HeroSlideShow() {
       <div className="w-4/5 aspect-video relative overflow-hidden">
         <img
           ref={slideRef}
-          src={slide.poster}
+          src={currentSlide.poster}
           alt=""
           className="aspect-video object-cover"
           onAnimationEnd={handleAnimationEnd}
@@ -64,7 +87,10 @@ export default function HeroSlideShow() {
           className="aspect-video object-cover absolute inset-0"
           onAnimationEnd={handleAnimationEnd}
         />
-        <SlideShowController onNextClick={handleOnNextClick} />
+        <SlideShowController
+          onNextClick={handleOnNextClick}
+          onPrevClick={handleOnPrevClick}
+        />
       </div>
 
       <div className="w-1/5 aspect-video bg-red-300"></div>
