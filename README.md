@@ -21,6 +21,7 @@
 - Pagination
 - Live Search
 - Traditional Search
+- Original custom slider
 
 Thanks to [Niraj Dhungana](https://www.udemy.com/course/mern-stack-bootcamp-build-a-complete-movie-review-app/) 🙏
 
