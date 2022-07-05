@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect, forwardRef } from 'react';
 import { AiOutlineDoubleLeft, AiOutlineDoubleRight } from 'react-icons/ai';
+import { Link } from 'react-router-dom';
 import { getLatestUploads } from '../../api/movie';
 import { useNotification } from '../../hooks';
 
@@ -10,6 +11,7 @@ export default function HeroSlideShow() {
   const [currentSlide, setCurrentSlide] = useState({});
   const [cloneSlide, setCloneSlide] = useState({});
   const [slides, setSlides] = useState([]);
+  const [upNext, setUpNext] = useState([]);
   const [visible, setVisible] = useState(true);
   const slideRef = useRef();
   const cloneSlideRef = useRef();
@@ -38,6 +40,22 @@ export default function HeroSlideShow() {
     startSlideShow();
   };
 
+  const updateUpNext = (currentIndex) => {
+    if (!slides.length) return;
+
+    const upNextCount = currentIndex + 1;
+    const end = upNextCount + 3;
+
+    let newSlides = [...slides];
+    newSlides = newSlides.slice(upNextCount, end);
+
+    if (!newSlides.length) {
+      newSlides = [...slides].slice(0, 3);
+    }
+
+    setUpNext([...newSlides]);
+  };
+
   const handleOnNextClick = () => {
     pauseSlideShow();
     // prevent flickering
@@ -52,7 +70,10 @@ export default function HeroSlideShow() {
 
     cloneSlideRef.current.classList.add('slide-out-to-left');
     slideRef.current.classList.add('slide-in-from-right');
+
+    updateUpNext(count);
   };
+
   const handleOnPrevClick = () => {
     pauseSlideShow();
     // prevent flickering
@@ -66,6 +87,8 @@ export default function HeroSlideShow() {
 
     cloneSlideRef.current.classList.add('slide-out-to-right');
     slideRef.current.classList.add('slide-in-from-left');
+
+    updateUpNext(count);
   };
 
   const fetchLatestUploads = async () => {
@@ -97,8 +120,12 @@ export default function HeroSlideShow() {
   }, []);
 
   useEffect(() => {
-    if (slides.length && visible) startSlideShow();
-    else pauseSlideShow();
+    if (slides.length && visible) {
+      startSlideShow();
+      updateUpNext(count);
+    } else {
+      pauseSlideShow();
+    }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [slides.length, visible]);
@@ -110,6 +137,7 @@ export default function HeroSlideShow() {
           title={currentSlide.title}
           src={currentSlide.poster}
           ref={slideRef}
+          id={currentSlide.id}
         />
 
         {/* cloned slide */}
@@ -119,6 +147,7 @@ export default function HeroSlideShow() {
           className="absolute inset-0"
           onAnimationEnd={handleAnimationEnd}
           title={cloneSlide.title}
+          id={currentSlide.id}
         />
 
         <SlideShowController
@@ -127,7 +156,21 @@ export default function HeroSlideShow() {
         />
       </div>
 
-      <div className="w-1/5 aspect-video bg-red-300"></div>
+      <div className="w-1/5 space-y-3 px-3">
+        <h1 className="font-semibold text-2xl text-primary dark:text-white">
+          Up Next
+        </h1>
+        {upNext.map(({ poster, id }) => {
+          return (
+            <img
+              key={id}
+              src={poster}
+              alt=""
+              className="aspect-video object-cover rounded"
+            />
+          );
+        })}
+      </div>
     </div>
   );
 }
@@ -147,9 +190,14 @@ const SlideShowController = ({ onPrevClick, onNextClick }) => {
 };
 
 const Slide = forwardRef((props, ref) => {
-  const { title, src, className = '', ...rest } = props;
+  const { id, title, src, className = '', ...rest } = props;
   return (
-    <div ref={ref} className={`w-full cursor-pointer ${className}`} {...rest}>
+    <Link
+      to={`/movie/${id}`}
+      ref={ref}
+      className={`w-full cursor-pointer block ${className}`}
+      {...rest}
+    >
       {src ? (
         <img
           src={src}
@@ -165,6 +213,6 @@ const Slide = forwardRef((props, ref) => {
           </h1>
         </div>
       ) : null}
-    </div>
+    </Link>
   );
 });
