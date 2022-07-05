@@ -1,18 +1,27 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, forwardRef } from 'react';
 import { AiOutlineDoubleLeft, AiOutlineDoubleRight } from 'react-icons/ai';
 import { getLatestUploads } from '../../api/movie';
 import { useNotification } from '../../hooks';
 
 let count = 0;
+let intervalId;
 
 export default function HeroSlideShow() {
   const [currentSlide, setCurrentSlide] = useState({});
   const [cloneSlide, setCloneSlide] = useState({});
   const [slides, setSlides] = useState([]);
+  const [visible, setVisible] = useState(true);
   const slideRef = useRef();
   const cloneSlideRef = useRef();
 
   const { updateNotification } = useNotification();
+
+  const startSlideShow = () => {
+    intervalId = setInterval(handleOnNextClick, 3500);
+  };
+  const pauseSlideShow = () => {
+    clearInterval(intervalId);
+  };
 
   const handleAnimationEnd = () => {
     const classes = [
@@ -26,9 +35,11 @@ export default function HeroSlideShow() {
     // prevent flickering
     cloneSlideRef.current.classList.add('-z-10');
     setCloneSlide({});
+    startSlideShow();
   };
 
   const handleOnNextClick = () => {
+    pauseSlideShow();
     // prevent flickering
     if (cloneSlideRef.current?.classList.value.includes('-z-10')) {
       cloneSlideRef.current.classList.remove('-z-10');
@@ -43,6 +54,7 @@ export default function HeroSlideShow() {
     slideRef.current.classList.add('slide-in-from-right');
   };
   const handleOnPrevClick = () => {
+    pauseSlideShow();
     // prevent flickering
     if (cloneSlideRef.current?.classList.value.includes('-z-10')) {
       cloneSlideRef.current.classList.remove('-z-10');
@@ -64,29 +76,51 @@ export default function HeroSlideShow() {
     setCurrentSlide(movies[0]);
   };
 
+  const handleOnVisibilityChange = () => {
+    const visibility = document.visibilityState;
+    if (visibility === 'hidden') setVisible(false);
+    if (visibility === 'visible') setVisible(true);
+  };
+
   useEffect(() => {
     fetchLatestUploads();
+    document.addEventListener('visibilitychange', handleOnVisibilityChange);
 
+    return () => {
+      pauseSlideShow();
+      document.removeEventListener(
+        'visibilitychange',
+        handleOnVisibilityChange
+      );
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    if (slides.length && visible) startSlideShow();
+    else pauseSlideShow();
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [slides.length, visible]);
 
   return (
     <div className="w-full flex">
       <div className="w-4/5 aspect-video relative overflow-hidden">
-        <img
-          ref={slideRef}
+        <Slide
+          title={currentSlide.title}
           src={currentSlide.poster}
-          alt=""
-          className="aspect-video object-cover"
-          onAnimationEnd={handleAnimationEnd}
+          ref={slideRef}
         />
-        <img
+
+        {/* cloned slide */}
+        <Slide
           ref={cloneSlideRef}
           src={cloneSlide.poster}
-          alt=""
-          className="aspect-video object-cover absolute inset-0"
+          className="absolute inset-0"
           onAnimationEnd={handleAnimationEnd}
+          title={cloneSlide.title}
         />
+
         <SlideShowController
           onNextClick={handleOnNextClick}
           onPrevClick={handleOnPrevClick}
@@ -111,3 +145,26 @@ const SlideShowController = ({ onPrevClick, onNextClick }) => {
     </div>
   );
 };
+
+const Slide = forwardRef((props, ref) => {
+  const { title, src, className = '', ...rest } = props;
+  return (
+    <div ref={ref} className={`w-full cursor-pointer ${className}`} {...rest}>
+      {src ? (
+        <img
+          src={src}
+          alt=""
+          className="aspect-video object-cover"
+          // onAnimationEnd={handleAnimationEnd}
+        />
+      ) : null}
+      {title ? (
+        <div className="absolute inset-0 flex flex-col justify-end py-3 bg-gradient-to-t from-white dark:from-primary">
+          <h1 className="font-semibold text-4xl dark:text-highlight-dark text-highlight">
+            {title}
+          </h1>
+        </div>
+      ) : null}
+    </div>
+  );
+});
