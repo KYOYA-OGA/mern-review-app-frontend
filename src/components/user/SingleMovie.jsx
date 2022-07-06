@@ -4,6 +4,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import { getSingleMovie } from '../../api/movie';
 import { useAuth, useNotification } from '../../hooks';
 import Container from '../Container';
+import CustomButtonLink from '../CustomButtonLink';
 import AddRatingModal from '../modals/AddRatingModal';
 import RatingStar from '../RatingStar';
 import RelatedMovie from '../RelatedMovie';
@@ -84,155 +85,68 @@ export default function SingleMovie() {
 
   return (
     <div className="dark:bg-primary bg-white min-h-screen pb-10">
-      <Container>
+      <Container className="px-2 xl:px-0">
         <video poster={poster} src={trailer} controls></video>
         <div className="flex justify-between">
-          <h1 className="text-4xl text-highlight dark:text-highlight-dark font-semibold py-3">
+          <h1 className="text-2xl lg:text-3xl xl:text-4xl text-highlight dark:text-highlight-dark font-semibold py-3">
             {title}
           </h1>
           <div className="flex flex-col items-end">
             <RatingStar rating={reviews.ratingAvg} />
-            <Link
-              className="text-highlight dark:text-highlight-dark hover:underline"
-              to={`/movie/reviews/${id}`}
-            >
-              {convertReviewCount(reviews.reviewCount)} Reviews
-            </Link>
-
-            <button
-              className="text-highlight dark:text-highlight-dark hover:underline"
-              type="button"
+            <CustomButtonLink
+              label={`${convertReviewCount(reviews.reviewCount)} Reviews`}
+              onClick={() => navigate(`/movie/reviews/${id}`)}
+            />
+            <CustomButtonLink
+              label="Rate The Movie"
               onClick={handleOnRateMovie}
-            >
-              Rate The Movie
-            </button>
+            />
           </div>
         </div>
         <div className="space-y-3">
           <p className="text-light-subtle dark:text-dark-subtle">{storyLine}</p>
 
-          <div className="flex space-x-2">
-            <p className="text-light-subtle dark:text-dark-subtle font-semibold">
-              Director:
-            </p>
-            <p className="text-highlight dark:text-highlight-dark hover:underline cursor-pointer">
-              {director.name}
-            </p>
-          </div>
+          <ListWithLabel label="Director:">
+            <CustomButtonLink label={director.name} />
+          </ListWithLabel>
 
-          <div className="flex space-x-2">
-            <p className="text-light-subtle dark:text-dark-subtle font-semibold">
-              Writers:
-            </p>
-            <div className="flex space-x-2">
-              {writers.map((w) => {
-                return (
-                  <p
-                    key={w.id}
-                    className="text-highlight dark:text-highlight-dark hover:underline cursor-pointer"
-                  >
-                    {w.name}
-                  </p>
-                );
-              })}
-            </div>
-          </div>
+          <ListWithLabel label=" Writers:">
+            {writers.map((w) => (
+              <CustomButtonLink key={w.id} label={w.name} />
+            ))}
+          </ListWithLabel>
 
-          <div className="flex space-x-2">
-            <p className="text-light-subtle dark:text-dark-subtle font-semibold">
-              Cast:
-            </p>
-            <div className="flex space-x-2">
-              {cast.map((c) => {
-                return c.leadActor ? (
-                  <p
-                    key={c.profile.id}
-                    className="text-highlight dark:text-highlight-dark hover:underline cursor-pointer"
-                  >
-                    {c.profile.name}
-                  </p>
-                ) : null;
-              })}
-            </div>
-          </div>
+          <ListWithLabel label="Cast:">
+            {cast.map(({ id, profile, leadActor }) =>
+              leadActor ? (
+                <CustomButtonLink key={id} label={profile.name} />
+              ) : null
+            )}
+          </ListWithLabel>
 
-          <div className="flex space-x-2">
-            <p className="text-light-subtle dark:text-dark-subtle font-semibold">
-              Language:
-            </p>
-            <p className="text-highlight dark:text-highlight-dark">
-              {language}
-            </p>
-          </div>
+          <ListWithLabel label="Language:">
+            <CustomButtonLink label={language} clickable="false" />
+          </ListWithLabel>
 
-          <div className="flex space-x-2">
-            <p className="text-light-subtle dark:text-dark-subtle font-semibold">
-              Release Date:
-            </p>
-            <p className="text-highlight dark:text-highlight-dark hover:underline cursor-pointer">
-              {convertDate(releaseDate)}
-            </p>
-          </div>
+          <ListWithLabel label="Release Date:">
+            <CustomButtonLink
+              label={convertDate(releaseDate)}
+              clickable={false}
+            />
+          </ListWithLabel>
 
-          <div className="flex space-x-2">
-            <p className="text-light-subtle dark:text-dark-subtle font-semibold">
-              Genres:
-            </p>
-            <div className="flex space-x-2">
-              {genres.map((g) => {
-                return (
-                  <p
-                    key={g}
-                    className="text-highlight dark:text-highlight-dark"
-                  >
-                    {g}
-                  </p>
-                );
-              })}
-            </div>
-          </div>
+          <ListWithLabel label="Genres:">
+            {genres.map((g) => (
+              <CustomButtonLink key={g} label={g} clickable={false} />
+            ))}
+          </ListWithLabel>
 
-          <div className="flex space-x-2">
-            <p className="text-light-subtle dark:text-dark-subtle font-semibold">
-              Type:
-            </p>
-            <p className="text-highlight dark:text-highlight-dark hover:underline cursor-pointer">
-              {type}
-            </p>
-          </div>
+          <ListWithLabel label="Type:">
+            <CustomButtonLink label={type} clickable={false} />
+          </ListWithLabel>
 
-          <div>
-            <h1 className="text-light-subtle dark:text-dark-subtle font-semibold text-2xl mb-2">
-              Cast:
-            </h1>
-            <div className="grid grid-cols-10 gap-3 ">
-              {cast.map((c) => {
-                return (
-                  <div
-                    key={c.profile.id}
-                    className="flex flex-col items-center text-center"
-                  >
-                    <img
-                      className="w-24 h-24 rounded-full aspect-square object-cover"
-                      src={c.profile.avatar}
-                      alt=""
-                    />
+          <CastProfiles cast={cast} />
 
-                    <p className="text-highlight dark:text-highlight-dark hover:underline cursor-pointer">
-                      {c.profile.name}
-                    </p>
-
-                    <span className="text-light-subtle dark:text-dark-subtle text-sm">
-                      as
-                    </span>
-                    <p className="text-light-subtle dark:text-dark-subtle">
-                      {c.roleAs}
-                    </p>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
           <RelatedMovie movieId={movieId} />
         </div>
       </Container>
@@ -244,3 +158,48 @@ export default function SingleMovie() {
     </div>
   );
 }
+
+const ListWithLabel = ({ label, children }) => {
+  return (
+    <div className="flex flex-wrap gap-x-2">
+      <p className="text-light-subtle dark:text-dark-subtle font-semibold">
+        {label}
+      </p>
+      {children}
+    </div>
+  );
+};
+
+const CastProfiles = ({ cast }) => {
+  return (
+    <div>
+      <h1 className="text-light-subtle dark:text-dark-subtle font-semibold text-2xl mb-2">
+        Cast:
+      </h1>
+      <div className="flex flex-wrap gap-4">
+        {cast.map(({ profile, roleAs }) => {
+          return (
+            <div
+              key={profile.id}
+              className="flex flex-col items-center text-center basis-28"
+            >
+              <img
+                className="w-24 h-24 rounded-full aspect-square object-cover"
+                src={profile.avatar}
+                alt=""
+              />
+
+              <CustomButtonLink label={profile.name} />
+              <span className="text-light-subtle dark:text-dark-subtle text-sm">
+                as
+              </span>
+              <p className="text-light-subtle dark:text-dark-subtle">
+                {roleAs}
+              </p>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+};

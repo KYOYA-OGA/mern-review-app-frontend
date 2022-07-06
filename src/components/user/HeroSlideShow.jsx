@@ -68,8 +68,8 @@ export default function HeroSlideShow() {
     count = (count + 1) % slides.length;
     setCurrentSlide(slides[count]);
 
-    cloneSlideRef.current.classList.add('slide-out-to-left');
-    slideRef.current.classList.add('slide-in-from-right');
+    cloneSlideRef.current?.classList.add('slide-out-to-left');
+    slideRef.current?.classList.add('slide-in-from-right');
 
     updateUpNext(count);
   };
@@ -78,15 +78,15 @@ export default function HeroSlideShow() {
     pauseSlideShow();
     // prevent flickering
     if (cloneSlideRef.current?.classList.value.includes('-z-10')) {
-      cloneSlideRef.current.classList.remove('-z-10');
+      cloneSlideRef.current?.classList.remove('-z-10');
     }
     setCloneSlide(slides[count]);
 
     count = (count + slides.length - 1) % slides.length;
     setCurrentSlide(slides[count]);
 
-    cloneSlideRef.current.classList.add('slide-out-to-right');
-    slideRef.current.classList.add('slide-in-from-left');
+    cloneSlideRef.current?.classList.add('slide-out-to-right');
+    slideRef.current?.classList.add('slide-in-from-left');
 
     updateUpNext(count);
   };
@@ -207,7 +207,7 @@ const Slide = forwardRef((props, ref) => {
         />
       ) : null}
       {title ? (
-        <div className="absolute inset-0 flex flex-col justify-end py-3 bg-gradient-to-t from-white dark:from-primary">
+        <div className="absolute inset-0 flex flex-col justify-end py-3 bg-gradient-to-t from-white via-transparent dark:from-primary dark:via-transparent">
           <h1 className="font-semibold text-4xl dark:text-highlight-dark text-highlight">
             {title}
           </h1>
