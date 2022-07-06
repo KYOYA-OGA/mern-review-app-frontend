@@ -91,8 +91,8 @@ export default function HeroSlideShow() {
     updateUpNext(count);
   };
 
-  const fetchLatestUploads = async () => {
-    const { error, movies } = await getLatestUploads();
+  const fetchLatestUploads = async (signal) => {
+    const { error, movies } = await getLatestUploads(signal);
     if (error) return updateNotification('error', error);
 
     setSlides([...movies]);
@@ -106,10 +106,12 @@ export default function HeroSlideShow() {
   };
 
   useEffect(() => {
-    fetchLatestUploads();
+    const ac = new AbortController();
+    fetchLatestUploads(ac.signal);
     document.addEventListener('visibilitychange', handleOnVisibilityChange);
 
     return () => {
+      ac.abort();
       pauseSlideShow();
       document.removeEventListener(
         'visibilitychange',
