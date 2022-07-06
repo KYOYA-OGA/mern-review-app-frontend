@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import { useEffect } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { getSingleMovie } from '../../api/movie';
-import { useNotification } from '../../hooks';
+import { useAuth, useNotification } from '../../hooks';
 import Container from '../Container';
+import AddRatingModal from '../modals/AddRatingModal';
 import RatingStar from '../RatingStar';
 import RelatedMovie from '../RelatedMovie';
 
-const convertReviewCount = (count) => {
+const convertReviewCount = (count = 0) => {
   if (count <= 999) return count;
 
   return parseFloat(count / 1000).toFixed(2) + 'k';
@@ -20,10 +21,27 @@ const convertDate = (date = '') => {
 export default function SingleMovie() {
   const [movie, setMovie] = useState({});
   const [ready, setReady] = useState(false);
+  const [showRatingModal, setShowRatingModal] = useState(false);
 
   const { updateNotification } = useNotification();
+  const { authInfo } = useAuth();
+  const { isLoggedIn } = authInfo;
 
   const { movieId } = useParams();
+  const navigate = useNavigate();
+
+  const handleOnRateMovie = () => {
+    if (!isLoggedIn) return navigate('/auth/signin');
+    setShowRatingModal(true);
+  };
+
+  const hideRatingModal = () => {
+    setShowRatingModal(false);
+  };
+
+  const handleOnRatingSuccess = (reviews) => {
+    setMovie({ ...movie, reviews: { ...reviews } });
+  };
 
   const fetchMovie = async () => {
     const { error, movie } = await getSingleMovie(movieId);
@@ -84,6 +102,7 @@ export default function SingleMovie() {
             <button
               className="text-highlight dark:text-highlight-dark hover:underline"
               type="button"
+              onClick={handleOnRateMovie}
             >
               Rate The Movie
             </button>
@@ -217,6 +236,11 @@ export default function SingleMovie() {
           <RelatedMovie movieId={movieId} />
         </div>
       </Container>
+      <AddRatingModal
+        onSuccess={handleOnRatingSuccess}
+        visible={showRatingModal}
+        onClose={hideRatingModal}
+      />
     </div>
   );
 }
