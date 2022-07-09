@@ -1,6 +1,5 @@
 import React from 'react';
 import GridContainer from '../GridContainer';
-import { AiFillStar } from 'react-icons/ai';
 import { Link } from 'react-router-dom';
 import RatingStar from '../RatingStar';
 import { getPoster } from '../../utils/helper';

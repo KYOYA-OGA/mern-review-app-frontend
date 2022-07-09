@@ -14,19 +14,6 @@ export default function SearchMovies() {
 
   const { updateNotification } = useNotification();
 
-  const handleAfterDelete = (movie) => {
-    const updatedMovies = movies.map((m) => {
-      if (m.id === movie.id) return movie;
-      return m;
-    });
-    setMovies([...updatedMovies]);
-  };
-
-  const handleAfterUpdate = (movie) => {
-    const updatedMovies = movies.filter((m) => m.id !== movie.id);
-    setMovies([...updatedMovies]);
-  };
-
   const searchMovies = async (val) => {
     const { error, results } = await searchPublicMovies(val);
     if (error) return updateNotification('error', error);

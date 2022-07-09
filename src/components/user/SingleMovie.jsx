@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useEffect } from 'react';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { getSingleMovie } from '../../api/movie';
 import { useAuth, useNotification } from '../../hooks';
 import { convertReviewCount } from '../../utils/helper';
