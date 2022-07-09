@@ -15,3 +15,17 @@ export const getAppInfo = async () => {
     return catchError(error);
   }
 };
+export const getMostRatedMovies = async () => {
+  const token = getToken();
+  try {
+    const { data } = await client.get('/admin/most-rated', {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    return data;
+  } catch (error) {
+    return catchError(error);
+  }
+};

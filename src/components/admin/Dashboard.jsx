@@ -3,6 +3,7 @@ import { getAppInfo } from '../../api/admin';
 import { useNotification } from '../../hooks';
 import AppInfoBox from '../AppInfoBox';
 import LatestUploads from '../LatestUploads';
+import MostRatedMovies from '../MostRatedMovies';
 
 export default function Dashboard() {
   const [appInfo, setAppInfo] = useState({
@@ -41,6 +42,7 @@ export default function Dashboard() {
         subTitle={appInfo.userCount.toLocaleString()}
       />
       <LatestUploads />
+      <MostRatedMovies />
     </div>
   );
 }
