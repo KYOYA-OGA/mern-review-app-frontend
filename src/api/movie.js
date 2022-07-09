@@ -119,6 +119,15 @@ export const searchMovieForAdmin = async (title) => {
   }
 };
 
+export const searchPublicMovies = async (title) => {
+  try {
+    const { data } = await client.get(`/movie/search-public?title=${title}`);
+    return data;
+  } catch (error) {
+    return catchError(error);
+  }
+};
+
 export const getTopRateMovies = async (type, signal) => {
   try {
     let endpoint = '/movie/top-rated';

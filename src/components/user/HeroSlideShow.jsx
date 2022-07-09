@@ -7,6 +7,9 @@ import { useNotification } from '../../hooks';
 let count = 0;
 let intervalId;
 
+let newTime = 0;
+let lastTime = 0;
+
 export default function HeroSlideShow() {
   const [currentSlide, setCurrentSlide] = useState({});
   const [cloneSlide, setCloneSlide] = useState({});
@@ -19,7 +22,15 @@ export default function HeroSlideShow() {
   const { updateNotification } = useNotification();
 
   const startSlideShow = () => {
-    intervalId = setInterval(handleOnNextClick, 3500);
+    intervalId = setInterval(() => {
+      newTime = Date.now();
+      const delta = newTime - lastTime;
+
+      // prevent setInterval bugs
+      if (delta < 4000) return clearInterval(intervalId);
+
+      handleOnNextClick();
+    }, 3500);
   };
   const pauseSlideShow = () => {
     clearInterval(intervalId);
@@ -57,6 +68,7 @@ export default function HeroSlideShow() {
   };
 
   const handleOnNextClick = () => {
+    lastTime = Date.now();
     pauseSlideShow();
     // prevent flickering
     if (cloneSlideRef.current?.classList.value.includes('-z-10')) {
@@ -134,7 +146,7 @@ export default function HeroSlideShow() {
 
   return (
     <div className="w-full flex">
-      <div className="w-4/5 aspect-video relative overflow-hidden">
+      <div className="w-full md:w-4/5 aspect-video relative overflow-hidden">
         <Slide
           title={currentSlide.title}
           src={currentSlide.poster}
@@ -158,7 +170,7 @@ export default function HeroSlideShow() {
         />
       </div>
 
-      <div className="w-1/5 space-y-3 px-3">
+      <div className="hidden md:block md:w-1/5 space-y-3 px-3">
         <h1 className="font-semibold text-2xl text-primary dark:text-white">
           Up Next
         </h1>
