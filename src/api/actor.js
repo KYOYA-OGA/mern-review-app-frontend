@@ -64,6 +64,15 @@ export const getActors = async (pageNo, limit) => {
   }
 };
 
+export const getActorProfile = async (id) => {
+  try {
+    const { data } = await client.get(`/actor/single/${id}`);
+    return data;
+  } catch (error) {
+    return catchError(error);
+  }
+};
+
 export const deleteActor = async (id) => {
   const token = getToken();
   try {

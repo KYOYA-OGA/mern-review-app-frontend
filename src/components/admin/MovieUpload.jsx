@@ -18,6 +18,13 @@ export default function MovieUpload({ visible, onClose }) {
     updateNotification('error', typeError);
   };
 
+  const resetState = () => {
+    setVideoSelected(false);
+    setVideoUploaded(false);
+    setUploadProgress(0);
+    setVideoInfo({});
+  };
+
   //? Uploading video may take a while, so use an individual function to prevent unintended deletion of other movie state
   const handleUploadTrailer = async (data) => {
     const { error, url, public_id } = await uploadTrailer(
@@ -52,9 +59,13 @@ export default function MovieUpload({ visible, onClose }) {
 
     setBusy(true);
     data.append('trailer', JSON.stringify(videoInfo));
-    const res = await uploadMovie(data);
+    const { error } = await uploadMovie(data);
+
     setBusy(false);
+    if (error) return updateNotification('error', error);
+
     updateNotification('success', 'Movie uploaded successfully');
+    resetState();
     onClose();
   };
 
@@ -94,10 +105,10 @@ const TrailerSelector = ({ visible, handleChange, onTypeError }) => {
         types={['mp4', 'avi']}
         onTypeError={onTypeError}
       >
-        <div className="w-48 h-48 border border-dashed dark:border-dark-subtle border-light-subtle rounded-full flex flex-col items-center justify-center text-secondary dark:text-dark-subtle cursor-pointer">
+        <label className="w-48 h-48 border border-dashed dark:border-dark-subtle border-light-subtle rounded-full flex flex-col items-center justify-center text-secondary dark:text-dark-subtle cursor-pointer">
           <AiOutlineCloudUpload size={80} />
           <p>Drop your file here!</p>
-        </div>
+        </label>
       </FileUploader>
     </div>
   );

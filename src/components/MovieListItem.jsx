@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { BsBoxArrowRight, BsPencilSquare, BsTrash } from 'react-icons/bs';
 import { deleteMovie } from '../api/movie';
 import { useNotification } from '../hooks';
+import { getPoster } from '../utils/helper';
 import ConfirmModal from './modals/ConfirmModal';
 import UpdateMovie from './modals/UpdateMovie';
 
@@ -69,14 +70,18 @@ function MovieListItem({ movie, afterDelete, afterUpdate }) {
 }
 
 function MovieCard({ movie, onDeleteClick, onEditClick, onOpenClick }) {
-  const { poster, title, genres = [], status } = movie;
+  const { poster, responsivePosters, title, genres = [], status } = movie;
   return (
     <table className="w-full border-b">
       <tbody>
         <tr>
           <td>
             <div className="w-24">
-              <img className="w-full aspect-square" src={poster} alt={title} />
+              <img
+                className="w-full aspect-square"
+                src={getPoster(responsivePosters || poster)}
+                alt={title}
+              />
             </div>
           </td>
           <td className="w-full pl-5">

@@ -6,6 +6,7 @@ import { useAuth, useNotification } from '../../hooks';
 import Container from '../Container';
 import CustomButtonLink from '../CustomButtonLink';
 import AddRatingModal from '../modals/AddRatingModal';
+import ProfileModal from '../modals/ProfileModal';
 import RatingStar from '../RatingStar';
 import RelatedMovie from '../RelatedMovie';
 
@@ -23,6 +24,8 @@ export default function SingleMovie() {
   const [movie, setMovie] = useState({});
   const [ready, setReady] = useState(false);
   const [showRatingModal, setShowRatingModal] = useState(false);
+  const [showProfileModal, setShowProfileModal] = useState(false);
+  const [selectedProfile, setSelectedProfile] = useState({});
 
   const { updateNotification } = useNotification();
   const { authInfo } = useAuth();
@@ -42,6 +45,15 @@ export default function SingleMovie() {
 
   const handleOnRatingSuccess = (reviews) => {
     setMovie({ ...movie, reviews: { ...reviews } });
+  };
+
+  const handleProfileClick = (profile) => {
+    setSelectedProfile(profile);
+    setShowProfileModal(true);
+  };
+
+  const hideProfileModal = () => {
+    setShowProfileModal(false);
   };
 
   const fetchMovie = async () => {
@@ -107,7 +119,10 @@ export default function SingleMovie() {
           <p className="text-light-subtle dark:text-dark-subtle">{storyLine}</p>
 
           <ListWithLabel label="Director:">
-            <CustomButtonLink label={director.name} />
+            <CustomButtonLink
+              label={director.name}
+              onClick={() => handleProfileClick(director)}
+            />
           </ListWithLabel>
 
           <ListWithLabel label=" Writers:">
@@ -150,10 +165,16 @@ export default function SingleMovie() {
           <RelatedMovie movieId={movieId} />
         </div>
       </Container>
+
       <AddRatingModal
         onSuccess={handleOnRatingSuccess}
         visible={showRatingModal}
         onClose={hideRatingModal}
+      />
+      <ProfileModal
+        profileId={selectedProfile.id}
+        visible={showProfileModal}
+        onClose={hideProfileModal}
       />
     </div>
   );
