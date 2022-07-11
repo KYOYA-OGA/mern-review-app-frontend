@@ -78,7 +78,7 @@ function MovieCard({ movie, onDeleteClick, onEditClick, onOpenClick }) {
           <td>
             <div className="w-24">
               <img
-                className="w-full aspect-square"
+                className="w-full aspect-video"
                 src={getPoster(responsivePosters || poster)}
                 alt={title}
               />

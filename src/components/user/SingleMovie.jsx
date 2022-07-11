@@ -122,14 +122,22 @@ export default function SingleMovie() {
 
           <ListWithLabel label=" Writers:">
             {writers.map((w) => (
-              <CustomButtonLink key={w.id} label={w.name} />
+              <CustomButtonLink
+                key={w.id}
+                label={w.name}
+                onClick={() => handleProfileClick(w)}
+              />
             ))}
           </ListWithLabel>
 
           <ListWithLabel label="Cast:">
             {cast.map(({ id, profile, leadActor }) =>
               leadActor ? (
-                <CustomButtonLink key={id} label={profile.name} />
+                <CustomButtonLink
+                  key={id}
+                  label={profile.name}
+                  onClick={() => handleProfileClick(profile)}
+                />
               ) : null
             )}
           </ListWithLabel>
@@ -155,7 +163,7 @@ export default function SingleMovie() {
             <CustomButtonLink label={type} clickable={false} />
           </ListWithLabel>
 
-          <CastProfiles cast={cast} />
+          <CastProfiles cast={cast} onClick={handleProfileClick} />
 
           <RelatedMovie movieId={movieId} />
         </div>
@@ -186,7 +194,7 @@ const ListWithLabel = ({ label, children }) => {
   );
 };
 
-const CastProfiles = ({ cast }) => {
+const CastProfiles = ({ cast, onClick }) => {
   return (
     <div>
       <h1 className="text-light-subtle dark:text-dark-subtle font-semibold text-2xl mb-2">
@@ -205,7 +213,10 @@ const CastProfiles = ({ cast }) => {
                 alt=""
               />
 
-              <CustomButtonLink label={profile.name} />
+              <CustomButtonLink
+                label={profile.name}
+                onClick={() => onClick(profile)}
+              />
               <span className="text-light-subtle dark:text-dark-subtle text-sm">
                 as
               </span>
