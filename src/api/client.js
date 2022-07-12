@@ -1,7 +1,11 @@
 import axios from 'axios';
 
+const URL =
+  process.env.NODE_ENV === 'development'
+    ? 'http://localhost:8000/api'
+    : 'https://kyoyadev.tech/api';
 const client = axios.create({
-  baseURL: process.env.BASEURL || 'http://localhost:8000/api',
+  baseURL: URL,
 });
 
 export default client;
