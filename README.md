@@ -1,5 +1,7 @@
 ## About The Project
 
+![movie-review-app](https://user-images.githubusercontent.com/64949271/178477892-4b5bbbd4-8314-41ac-8c25-42894ce70c92.jpg)
+
 [Demo URL](https://mern-review-app-frontend.pages.dev/)
 
 ### Built With
